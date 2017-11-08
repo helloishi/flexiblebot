@@ -28,8 +28,16 @@ def main():
             update_dict.update({"chat_id": chat_id})
 
             if 'text' in answer.keys():
-                text = answer["text"]
-                update_dict.update({"text": text})
+                update_dict['text'] = answer['text']
+
+            if 'file' in answer.keys():
+                update_dict['file'] = answer['file']
+
+            if 'photo' in answer.keys():
+                update_dict['photo'] = answer['photo']
+
+            if 'document' in answer.keys():
+                update_dict['document'] = answer['document']
 
             message_handler(update_dict)
 
@@ -45,7 +53,6 @@ def main():
                       "callback_query_id": callback_query_id
                       }
             callback_query_handler(answer)
-
     except Exception: return 'ok'
 
     return 'ok'
