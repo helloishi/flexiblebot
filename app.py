@@ -31,10 +31,6 @@ def main():
                 text = answer["text"]
                 update_dict.update({"text": text})
 
-            if 'location' in answer.keys():
-                location = {'location': answer['location']}
-                update_dict.update(location)
-
             message_handler(update_dict)
 
         elif type == "callback_query":
@@ -60,5 +56,5 @@ def test():
     return 'working'
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT'))
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

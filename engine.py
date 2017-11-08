@@ -6,79 +6,7 @@ import time
 #ENVIRON'S
 APP_URL = os.environ.get('APP_URL')
 TOKEN = os.environ.get('TOKEN')
-DARKSKY = os.environ.get('DARKSKY')
 URL = 'https://api.telegram.org/bot' + TOKEN + '/'
-
-
-#WEATHER
-def getWeather():
-    t = int(time.time())
-    r = requests.get('https://api.darksky.net/forecast/{}/49.9992,36.2429,{}?lang=ru'.format(DARKSKY,t))
-    r = r.json()
-    r = r["currently"]
-
-    type = r['precipType']
-    clouds = r["cloudCover"] * 100
-    temperature = round(r["apparentTemperature"]-32, 2)
-    humidity = r["humidity"] * 100
-    summary = r["summary"]
-
-    return ("Погода ⛅\n"
-          "<b>{0}</b>\n"
-          "Облачность: {1}%\n"
-          "Температура: {2} C\n"
-          "Влажность: {3} %\n".format(summary, clouds, temperature, humidity))
-
-
-#WIKISEARCH
-def WikiSearch(search_request):
-    link = 'https://ru.wikipedia.org/w/api.php/api.php?format=json&action=query&prop=extracts&titles={}' \
-           '&redirects=true&format=json&exintro=false&exchars=1000&exlimit=1&exsectionformat=plain'.format(
-        search_request)
-    a = requests.get(link)
-    res = a.json()
-
-    res = res['query']['pages']
-    res = res[next(iter(res.keys()))]
-    res = res['extract']
-
-    res = res[3:]
-    res = res.replace('<br>', '\n')
-    res = res.replace('<i>', '')
-    res = res.replace('</i>', '')
-    res = res.replace('<p>', '\n')
-    res = res.replace('</p>', '')
-    res = res.replace('<li>', '\n')
-    res = res.replace('</li>', '')
-    res = res.replace('<ul>', '\n')
-    res = res.replace('</ul>', '')
-
-    span_first = res.find('<span')
-    span_second = res.rfind('/span>')
-
-    if span_second != -1:
-        span_second += 6
-
-    res = res[:span_first] + res[span_second:]
-    res = res.replace('<span>', '')
-    res = res.replace('</span>', '')
-    return res
-
-
-#DUCKDUCKGO
-def DuckDuckGo(search_request):
-    a = requests.get('http://api.duckduckgo.com/?q={}&format=json&pretty=1'.format(search_request))
-    res = a.json()
-    res = res['Abstract']
-    if res == '':
-        res = 'Я ничего не нашла :('
-    return res
-
-
-#WEBHOOK
-def setWebhook(app_url):
-    url = URL + 'setWebhook?url='+app_url
-    requests.get(url)
 
 
 #TEXT
