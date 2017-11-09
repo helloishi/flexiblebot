@@ -8,6 +8,15 @@ TOKEN = os.environ.get('TOKEN')
 URL = 'https://api.telegram.org/bot' + TOKEN + '/'
 
 
+#WEBHOOK
+def setWebhook(app_url):
+    url = URL + 'setWebhook?url='+app_url
+    requests.get(url)
+
+
+setWebhook(APP_URL)
+
+
 #TEXT
 def sendMessage(chat_id, text, disable_notification=False, reply_markup=None, disable_HTML=False):
     """
@@ -98,10 +107,12 @@ def sendPhoto(chat_id, file_id):
     #f = open(file_name, mode='rb')
     requests.get(url)
 
+
 # DOCUMENT
 def sendDocument(chat_id, document_id):
     url = URL + 'sendDocument?chat_id={}&document={}'.format(chat_id, document_id)
     requests.get(url)
+
 
 # STICKERS
 def sendSticker(chat_id, sticker_id):
