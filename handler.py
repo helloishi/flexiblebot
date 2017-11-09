@@ -1,9 +1,20 @@
 import engine as e
 import os
 
-SCRIPT_DIR = os.getcwd()
-DIR_NAMES = [x[:-4] for x in os.listdir(SCRIPT_DIR+'/Answers')]
-print(DIR_NAMES)
+SCRIPT_DIR = os.getcwd() + '/Answers'
+
+ALL_ANSWERS = {}
+
+
+def load_answers_from_dir(current_dir):
+    DIR_NAMES = os.scandir(current_dir)
+    for x in DIR_NAMES:
+        if x.is_dir():
+            load_answers_from_dir(current_dir + '/' + x.name)
+        else:
+            f = open(current_dir + '/' + x.name, 'r')
+            ALL_ANSWERS[x.name[:-4]] = f.readlines()
+load_answers_from_dir(SCRIPT_DIR)
 
 def message_handler(query):
     chat_id = query["chat_id"]
@@ -41,7 +52,6 @@ def document_message(chat_id, document_info):
     e.sendMessage(chat_id, answer)
 
 
-
 def command_message(chat_id, text):
     if '@' in text:
         res = text.find('@')
@@ -50,64 +60,52 @@ def command_message(chat_id, text):
     if text[0] == '/':
         text = text[1:]
 
-    if not text in DIR_NAMES:
+    print(ALL_ANSWERS.keys())
+    if not text in ALL_ANSWERS.keys():
         e.sendMessage(chat_id, 'Такой команды нет')
 
     else:
-        answer_from_file(chat_id, text)
+        decode_answer(chat_id, ALL_ANSWERS[text])
 
 
-def answer_from_file(chat_id, query):
+def decode_answer(chat_id, query):
 
     text = ''
+    mode = ''
     markup = []
 
-    with open(SCRIPT_DIR+'/Answers/'+query + '.txt', 'r') as f:
-        mode = ''
-        for line in f.readlines():
-            if line[0] == '#':
-                mode = line.rstrip()
-                if mode != '#text_end': continue
+    for line in query:
+        if line[0] == '#':
+            mode = line.rstrip()
+            if mode != '#text_end':
+                continue
 
-            if mode == '#text':
-                text += line
+        if mode == '#text':
+            text += line
 
-            elif mode == '#text_end':
-                if not text: continue
+        elif mode == '#text_end':
+            if not text:
+                continue
 
-                if markup:
-                    markup = {'keyboard': markup, 'resize_keyboard': True}
-                e.sendMessage(chat_id, text, reply_markup=markup)
-                text = ''
-                markup = []
+            if markup:
+                markup = {'keyboard': markup, 'resize_keyboard': True}
+            e.sendMessage(chat_id, text, reply_markup=markup)
 
-            elif mode == '#markup':
-                buttons = line.rstrip().split('%')
-                buttons_line = [{"text": x} for x in buttons]
-                markup.append(buttons_line)
+            text = ''
+            markup = []
 
-            elif mode == '#photo':
-                photo_id = line.rstrip()
-                e.sendPhoto(chat_id, photo_id)
+        elif mode == '#markup':
+            buttons = line.rstrip().split('%')
+            buttons_line = [{"text": x} for x in buttons]
+            markup.append(buttons_line)
 
-            elif mode == '#document':
-                document_id = line.rstrip()
-                e.sendDocument(chat_id, document_id)
+        elif mode == '#photo':
+            photo_id = line.rstrip()
+            e.sendPhoto(chat_id, photo_id)
 
-
-
-
-
-
-    """
-    data = f.readlines()
-    for i in data:
-        button_line = []
-        buttons = i.rstrip().split('%')
-        for x in buttons:
-            button_line.append({'text': x})
-        markup['keyboard'].append(button_line)"""
-
+        elif mode == '#document':
+            document_id = line.rstrip()
+            e.sendDocument(chat_id, document_id)
 
 
 

@@ -14,7 +14,7 @@ def setWebhook(app_url):
     requests.get(url)
 
 
-setWebhook(APP_URL)
+#setWebhook(APP_URL)
 
 
 #TEXT
