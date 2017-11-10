@@ -41,11 +41,10 @@ def sendMessage(chat_id, text, disable_notification=False, reply_markup=None, di
     else:
         parse_mode=''
 
-
     url = URL + 'sendMessage?chat_id={}&text={}{}{}{}'\
         .format(chat_id,text,parse_mode,reply_markup,disable_notification)
     res = requests.get(url)
-    print(res.content)
+
     if res.ok:
         message_id = res.json()['result']['message_id']
         return message_id

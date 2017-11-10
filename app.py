@@ -30,9 +30,6 @@ def main():
             if 'text' in answer.keys():
                 update_dict['text'] = answer['text']
 
-            if 'file' in answer.keys():
-                update_dict['file'] = answer['file']
-
             if 'photo' in answer.keys():
                 update_dict['photo'] = answer['photo']
 
